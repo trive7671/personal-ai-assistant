@@ -1,0 +1,202 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-cyber-bg: #030712;
+  --color-cyber-card: #0b0f19;
+  --color-cyber-border: #1e293b;
+  --color-cyber-text: #f3f4f6;
+  --color-cyber-primary: #00f0ff;
+  --color-cyber-success: #10b981;
+  --color-cyber-warning: #f97316;
+  --color-cyber-danger: #ef4444;
+  --color-cyber-indigo: #6366f1;
+}
+
+/* ========= THEME VARIABLES ========= */
+:root {
+  --bg-primary: #030712;
+  --bg-card: #0b0f19;
+  --bg-input: #0f172a;
+  --border-color: #1e293b;
+  --text-primary: #f3f4f6;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --scrollbar-track: #030712;
+  --scrollbar-thumb: #1e293b;
+}
+
+[data-theme="light"] {
+  --bg-primary: #f0f4f8;
+  --bg-card: #ffffff;
+  --bg-input: #f8fafc;
+  --border-color: #cbd5e1;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --scrollbar-track: #e2e8f0;
+  --scrollbar-thumb: #94a3b8;
+}
+
+body {
+  margin: 0;
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+code, pre {
+  font-family: 'JetBrains Mono', source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00f0ff;
+}
+
+/* Light mode card overrides */
+[data-theme="light"] .bg-cyber-card,
+[data-theme="light"] .bg-\[cyber-card\] {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .bg-cyber-bg {
+  background-color: #f0f4f8 !important;
+}
+
+[data-theme="light"] nav {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+}
+
+[data-theme="light"] .text-gray-400,
+[data-theme="light"] .text-gray-500 {
+  color: #64748b !important;
+}
+
+[data-theme="light"] .text-white {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .bg-slate-900,
+[data-theme="light"] .bg-slate-800\/50,
+[data-theme="light"] .bg-slate-900\/60 {
+  background-color: #f1f5f9 !important;
+}
+
+[data-theme="light"] .border-cyber-border {
+  border-color: #cbd5e1 !important;
+}
+
+[data-theme="light"] table thead {
+  background-color: #f8fafc !important;
+}
+
+[data-theme="light"] tr:hover {
+  background-color: #f1f5f9 !important;
+}
+
+[data-theme="light"] input,
+[data-theme="light"] textarea {
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+/* Cyber element glow animations */
+.cyber-glow {
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+  border: 1px solid #1e293b;
+}
+
+.cyber-glow-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.cyber-glow-hover:hover {
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+  border-color: #00f0ff;
+}
+
+.glow-success:hover {
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+  border-color: #10b981;
+}
+
+.glow-danger:hover {
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+}
+
+.glow-warning:hover {
+  box-shadow: 0 0 20px rgba(249, 115, 22, 0.2);
+  border-color: #f97316;
+}
+
+@keyframes scan-line {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+.scan-line-animation {
+  animation: scan-line 2.5s linear infinite;
+}
+
+/* Password strength meter */
+.strength-bar {
+  height: 4px;
+  border-radius: 2px;
+  transition: width 0.4s ease, background-color 0.4s ease;
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: #1e293b;
+  border-radius: 12px;
+  border: 1px solid #334155;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.theme-toggle.light {
+  background: #00f0ff;
+  border-color: #00c4cc;
+}
+
+.theme-toggle::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  background: #64748b;
+  border-radius: 50%;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.theme-toggle.light::after {
+  transform: translateX(20px);
+  background: #0f172a;
+}
