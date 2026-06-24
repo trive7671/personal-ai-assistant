@@ -3,8 +3,8 @@ services:
     name: aegis-backend
     env: python
     plan: free
-    buildCommand: "cd backend && pip install -r requirements.txt"
-    startCommand: "cd backend && gunicorn main:app -k uvicorn.workers.UvicornWorker -b 0.0.0.0:$PORT"
+    buildCommand: "pip install -r backend/requirements.txt"
+    startCommand: "gunicorn backend.main:app -k uvicorn.workers.UvicornWorker -b 0.0.0.0:$PORT"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -14,6 +14,13 @@ services:
         value: 3.10.0
       - key: ALLOWED_ORIGIN_REGEX
         value: "https?://.*\\.vercel\\.app"
+      - key: NVIDIA_API_KEY
+        value: "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"
+      - key: NVIDIA_NIM_URL
+        value: "https://integrate.api.nvidia.com/v1/chat/completions"
+      - key: NVIDIA_NIM_MODEL
+        value: "meta/llama-3.1-8b-instruct"
+
 databases:
   - name: aegis-db
     databaseName: aegis
