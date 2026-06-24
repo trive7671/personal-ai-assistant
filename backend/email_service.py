@@ -1,80 +1,95 @@
-import os
+"""
+Email Alert Service — sends HTML email notifications when HIGH/CRITICAL threats are detected.
+Uses Gmail SMTP with app password. Configure EMAIL_USER and EMAIL_PASS in .env
+"""
 import smtplib
+import os
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from dotenv import load_dotenv
 
-load_dotenv()
+EMAIL_USER = os.getenv("EMAIL_USER", "")
+EMAIL_PASS = os.getenv("EMAIL_PASS", "")
+EMAIL_FROM_NAME = "Aegis AI Security"
 
-# We expect these in the .env file (or Render Environment Variables)
-SMTP_SERVER = os.getenv("SMTP_SERVER", "smtp.gmail.com")
-SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
-SMTP_USERNAME = os.getenv("SMTP_USERNAME")
-SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
-ALERT_FROM_EMAIL = os.getenv("ALERT_FROM_EMAIL", "security@aegis-ai.com")
 
 def send_alert_email(to_email: str, url: str, risk: str, score: int, issues: list):
-    """
-    Sends an automated email alert when a HIGH or CRITICAL risk is detected.
-    Requires SMTP_USERNAME and SMTP_PASSWORD to be set in environment.
-    """
-    if not SMTP_USERNAME or not SMTP_PASSWORD:
-        print("WARNING: SMTP credentials not set. Alert email cannot be sent.")
-        return False
+    """Send an HTML threat alert email to the registered user."""
+    if not EMAIL_USER or not EMAIL_PASS or not to_email:
+        print(f"[Email] Skipped — EMAIL_USER/EMAIL_PASS not configured or no recipient.")
+        return
 
-    subject = f"🚨 SECURITY ALERT: {risk} Risk Detected on {url}"
-    
-    # Format issues as bullet points
-    issues_html = "".join([f"<li>{issue}</li>" for issue in issues]) if issues else "<li>Unspecified threats detected.</li>"
+    risk_color = {
+        "HIGH": "#f97316",
+        "CRITICAL": "#ef4444",
+        "MEDIUM": "#eab308",
+        "LOW": "#10b981"
+    }.get(risk, "#94a3b8")
 
-    # HTML Email Template
-    html_content = f"""
+    issues_html = "".join(
+        f'<li style="margin-bottom:6px; color:#f3f4f6;">⚠ {issue}</li>'
+        for issue in (issues or [])
+    ) or '<li style="color:#10b981;">No specific issues detected.</li>'
+
+    html_body = f"""
+    <!DOCTYPE html>
     <html>
-      <body style="font-family: Arial, sans-serif; color: #333;">
-        <div style="max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
-          <div style="background-color: #d32f2f; color: white; padding: 20px; text-align: center;">
-            <h2 style="margin: 0;">Aegis AI Security Alert</h2>
-          </div>
-          <div style="padding: 20px;">
-            <p><strong>Warning:</strong> A recent scan has identified a potential security threat.</p>
-            <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-              <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Target URL:</strong></td><td style="padding: 8px; border-bottom: 1px solid #eee;">{url}</td></tr>
-              <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Risk Level:</strong></td><td style="padding: 8px; border-bottom: 1px solid #eee; color: #d32f2f; font-weight: bold;">{risk}</td></tr>
-              <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Security Score:</strong></td><td style="padding: 8px; border-bottom: 1px solid #eee;">{score}/100</td></tr>
-            </table>
-            
-            <h3 style="margin-top: 20px; color: #d32f2f;">Identified Threats:</h3>
-            <ul>
-              {issues_html}
-            </ul>
-            
-            <p style="margin-top: 20px;">Please log in to your Aegis AI Dashboard immediately to review the full AI threat analysis and take necessary precautions.</p>
-          </div>
-          <div style="background-color: #f5f5f5; padding: 10px; text-align: center; font-size: 12px; color: #777;">
-            <p>This is an automated alert from your Aegis AI Cybersecurity Assistant.</p>
-          </div>
+    <head><meta charset="UTF-8"></head>
+    <body style="margin:0;padding:0;background:#030712;font-family:'Segoe UI',Arial,sans-serif;">
+      <div style="max-width:600px;margin:40px auto;background:#0b0f19;border:1px solid #1e293b;border-radius:12px;overflow:hidden;">
+        <!-- Header -->
+        <div style="background:linear-gradient(135deg,#00f0ff15,#6366f115);padding:32px;text-align:center;border-bottom:1px solid #1e293b;">
+          <div style="font-size:36px;margin-bottom:8px;">🛡️</div>
+          <h1 style="margin:0;color:#00f0ff;font-size:24px;letter-spacing:2px;">AEGIS AI</h1>
+          <p style="margin:4px 0 0;color:#64748b;font-size:12px;letter-spacing:1px;">SECURITY ALERT</p>
         </div>
-      </body>
+        <!-- Body -->
+        <div style="padding:32px;">
+          <div style="background:#0f172a;border:1px solid {risk_color}40;border-left:4px solid {risk_color};border-radius:8px;padding:16px;margin-bottom:24px;">
+            <p style="margin:0;color:#94a3b8;font-size:11px;text-transform:uppercase;letter-spacing:1px;">Risk Level Detected</p>
+            <p style="margin:6px 0 0;color:{risk_color};font-size:28px;font-weight:800;">{risk}</p>
+          </div>
+
+          <h2 style="color:#f3f4f6;font-size:16px;margin-bottom:8px;">Target URL</h2>
+          <p style="background:#0f172a;padding:12px;border-radius:6px;color:#00f0ff;font-family:monospace;font-size:13px;word-break:break-all;border:1px solid #1e293b;">
+            {url}
+          </p>
+
+          <div style="display:flex;gap:16px;margin:20px 0;">
+            <div style="flex:1;background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:16px;text-align:center;">
+              <p style="margin:0;color:#64748b;font-size:11px;text-transform:uppercase;">Security Score</p>
+              <p style="margin:6px 0 0;font-size:32px;font-weight:800;color:{'#10b981' if score >= 80 else '#f97316' if score >= 60 else '#ef4444'};">{score}<span style="font-size:14px;color:#64748b;">/100</span></p>
+            </div>
+          </div>
+
+          <h2 style="color:#f3f4f6;font-size:16px;margin-bottom:12px;">Issues Detected</h2>
+          <ul style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:16px 16px 16px 32px;margin:0 0 24px;">
+            {issues_html}
+          </ul>
+
+          <p style="color:#64748b;font-size:12px;margin-top:24px;text-align:center;">
+            This is an automated security alert from Aegis AI.<br>
+            Do not reply to this email.
+          </p>
+        </div>
+        <!-- Footer -->
+        <div style="background:#030712;padding:16px;text-align:center;border-top:1px solid #1e293b;">
+          <p style="margin:0;color:#334155;font-size:11px;">Aegis AI Personal Cybersecurity Assistant</p>
+        </div>
+      </div>
+    </body>
     </html>
     """
 
     msg = MIMEMultipart("alternative")
-    msg["Subject"] = subject
-    msg["From"] = ALERT_FROM_EMAIL
+    msg["Subject"] = f"⚠ Aegis Alert: {risk} Risk Detected — {url[:50]}"
+    msg["From"] = f"{EMAIL_FROM_NAME} <{EMAIL_USER}>"
     msg["To"] = to_email
-
-    part = MIMEText(html_content, "html")
-    msg.attach(part)
+    msg.attach(MIMEText(html_body, "html"))
 
     try:
-        # Connect to SMTP server and send email
-        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
-        server.starttls()
-        server.login(SMTP_USERNAME, SMTP_PASSWORD)
-        server.sendmail(ALERT_FROM_EMAIL, to_email, msg.as_string())
-        server.quit()
-        print(f"Alert email successfully sent to {to_email}")
-        return True
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(EMAIL_USER, EMAIL_PASS)
+            server.sendmail(EMAIL_USER, to_email, msg.as_string())
+        print(f"[Email] Alert sent to {to_email} for {url} ({risk})")
     except Exception as e:
-        print(f"Failed to send alert email: {str(e)}")
-        return False
+        print(f"[Email] Failed to send alert: {e}")
