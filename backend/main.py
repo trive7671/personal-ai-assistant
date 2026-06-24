@@ -3,7 +3,7 @@ parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, parent_dir)
 
 import os
-from fastapi import FastAPI, Depends, HTTPException, status, Request
+from fastapi import FastAPI, Depends, HTTPException, status, Request, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
@@ -108,6 +108,42 @@ def get_mobile_link():
         "frontend_link": f"http://{ip}:5173",
         "backend_link": f"http://{ip}:8000"
     }
+
+@app.get("/api/system/download-extension")
+def download_extension(background_tasks: BackgroundTasks):
+    import shutil
+    import tempfile
+    from fastapi.responses import FileResponse
+    
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    extension_dir = os.path.join(base_dir, "chrome_extension")
+    
+    if not os.path.exists(extension_dir):
+        raise HTTPException(status_code=404, detail="Extension files not found")
+        
+    temp_dir = tempfile.mkdtemp()
+    zip_name = os.path.join(temp_dir, "aegis_extension")
+    zip_file_path = f"{zip_name}.zip"
+    
+    shutil.make_archive(zip_name, 'zip', extension_dir)
+    
+    def cleanup_file(path: str):
+        try:
+            if os.path.exists(path):
+                os.remove(path)
+            temp_path_dir = os.path.dirname(path)
+            if os.path.exists(temp_path_dir):
+                shutil.rmtree(temp_path_dir)
+        except Exception as e:
+            print(f"Error cleaning up temp zip: {e}")
+            
+    background_tasks.add_task(cleanup_file, zip_file_path)
+    
+    return FileResponse(
+        path=zip_file_path,
+        filename="aegis_extension.zip",
+        media_type="application/zip"
+    )
 
 
 # --- AUTHENTICATION ROUTER ---
