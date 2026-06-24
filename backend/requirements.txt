@@ -13,3 +13,6 @@ psycopg2-binary>=2.9.9
 email-validator>=2.1.0
 gunicorn>=21.2.0
 slowapi
+sse-starlette
+pyotp
+qrcode
