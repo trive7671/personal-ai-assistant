@@ -3,8 +3,9 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Shield, LayoutDashboard, Search, MessageSquare,
   Globe, Newspaper, ShieldCheck, LogOut, Sun, Moon,
-  Menu, X, User
+  Menu, X, User, Download
 } from "lucide-react";
+import { API_BASE } from "../config";
 
 export default function Navbar({ user, onLogout }) {
   const location = useLocation();
@@ -111,6 +112,17 @@ export default function Navbar({ user, onLogout }) {
               </Link>
             )}
 
+            {/* Download Extension */}
+            <a
+              href={`${API_BASE}/api/system/download-extension`}
+              download="aegis_extension.zip"
+              className="hidden sm:flex items-center space-x-1 px-3 py-1.5 rounded text-xs font-semibold bg-cyber-primary/10 text-cyber-primary border border-cyber-primary/30 hover:bg-cyber-primary hover:text-black transition-all cursor-pointer"
+              title="Download Chrome Extension ZIP"
+            >
+              <Download className="h-3.5 w-3.5" />
+              <span>Extension</span>
+            </a>
+
             {/* Logout */}
             <button
               onClick={handleLogoutClick}
@@ -159,6 +171,18 @@ export default function Navbar({ user, onLogout }) {
                 </Link>
               );
             })}
+
+            {/* Download Extension in mobile */}
+            <div className="pt-2 border-t" style={{ borderColor: "var(--border-color)" }}>
+              <a
+                href={`${API_BASE}/api/system/download-extension`}
+                download="aegis_extension.zip"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold text-cyber-primary hover:bg-cyber-primary/10 transition-all cursor-pointer border border-dashed border-cyber-primary/30"
+              >
+                <Download className="h-4 w-4 shrink-0" />
+                Download Extension
+              </a>
+            </div>
 
             {/* Logout row in mobile */}
             <div className="pt-2 border-t" style={{ borderColor: "var(--border-color)" }}>
