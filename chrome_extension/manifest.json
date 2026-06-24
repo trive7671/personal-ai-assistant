@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "Aegis AI Website Scanner",
+  "version": "1.0",
+  "description": "Inspect active browser URLs for phishing patterns and SSL configuration with Aegis AI.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "tabs",
+    "notifications"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["content.js"]
+    }
+  ],
+  "host_permissions": [
+    "http://localhost:8000/*",
+    "http://localhost:5173/*",
+    "https://aegis-backend-fy02.onrender.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  },
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  }
+}

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      width: 340px;
+      margin: 0;
+      padding: 16px;
+      background-color: #030712;
+      color: #f3f4f6;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      box-sizing: border-box;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 12px;
+      margin-bottom: 12px;
+    }
+    .logo-text {
+      font-weight: 800;
+      font-size: 16px;
+      letter-spacing: 0.05em;
+    }
+    .logo-cyan {
+      color: #00f0ff;
+    }
+    .tabs-nav {
+      display: flex;
+      border-bottom: 1px solid #1e293b;
+      margin-bottom: 12px;
+      gap: 4px;
+    }
+    .tab-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      color: #94a3b8;
+      padding: 8px 4px;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: monospace;
+      text-align: center;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover {
+      color: #e2e8f0;
+    }
+    .tab-btn.active {
+      color: #00f0ff;
+      border-bottom-color: #00f0ff;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .card {
+      background-color: #0b0f19;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    .card-title {
+      font-size: 11px;
+      font-weight: bold;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+      font-family: monospace;
+    }
+    .url-display {
+      font-size: 11px;
+      font-family: monospace;
+      color: #e2e8f0;
+      word-break: break-all;
+      margin-bottom: 12px;
+      background: #020617;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #0f172a;
+    }
+    .btn {
+      width: 100%;
+      background-color: #00f0ff;
+      color: #000;
+      border: none;
+      padding: 8px 16px;
+      font-size: 12px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background-color 0.2s;
+    }
+    .btn:hover {
+      background-color: #22d3ee;
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .btn-secondary {
+      background-color: #1e293b;
+      color: #f3f4f6;
+      border: 1px solid #334155;
+      margin-top: 6px;
+    }
+    .btn-secondary:hover {
+      background-color: #334155;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      font-size: 9px;
+      font-weight: bold;
+      border-radius: 4px;
+      font-family: monospace;
+      text-transform: uppercase;
+    }
+    .badge-low { background-color: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+    .badge-medium { background-color: rgba(249,115,22,0.15); color: #f97316; border: 1px solid rgba(249,115,22,0.3); }
+    .badge-high { background-color: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+    .badge-critical { background-color: rgba(159,18,57,0.15); color: #f43f5e; border: 1px solid rgba(159,18,57,0.3); }
+    
+    .result-grid {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 8px;
+    }
+    .score-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 3px solid #1e293b;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: monospace;
+      background: #020617;
+      shrink: 0;
+    }
+    .score-num {
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .score-label {
+      font-size: 6px;
+      color: #64748b;
+    }
+    .issues-list {
+      margin-top: 8px;
+      font-size: 10px;
+      font-family: monospace;
+      color: #ef4444;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .issue-item {
+      display: flex;
+      gap: 4px;
+      align-items: flex-start;
+      line-height: 1.3;
+    }
+    .input-field {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px;
+      background-color: #020617;
+      border: 1px solid #1e293b;
+      color: #fff;
+      border-radius: 6px;
+      font-size: 11px;
+      font-family: monospace;
+      margin-bottom: 8px;
+    }
+    .input-field:focus {
+      outline: none;
+      border-color: #00f0ff;
+    }
+    .hidden {
+      display: none !important;
+    }
+    .loader {
+      font-size: 11px;
+      color: #00f0ff;
+      font-family: monospace;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .loader-icon {
+      border: 2px solid #0f172a;
+      border-top: 2px solid #00f0ff;
+      border-radius: 50%;
+      width: 12px;
+      height: 12px;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Chat Elements */
+    .msg {
+      display: flex;
+      flex-direction: column;
+      max-width: 85%;
+      padding: 6px 8px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-family: monospace;
+      line-height: 1.3;
+      word-break: break-word;
+    }
+    .msg-user {
+      align-self: flex-end;
+      background-color: rgba(99, 102, 241, 0.2);
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      color: #fff;
+    }
+    .msg-ai {
+      align-self: flex-start;
+      background-color: #0f172a;
+      border: 1px solid #1e293b;
+      color: #cbd5e1;
+    }
+    
+    /* History Elements */
+    .hist-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #020617;
+      border: 1px solid #1e293b;
+      border-radius: 6px;
+      padding: 6px 8px;
+      font-size: 10px;
+      font-family: monospace;
+    }
+    .hist-url {
+      color: #cbd5e1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 180px;
+      text-align: left;
+    }
+    .hist-score {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00f0ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    </svg>
+    <span class="logo-text">AEGIS<span class="logo-cyan">.AI</span> CONTROL</span>
+  </div>
+
+  <!-- AUTH PANEL -->
+  <div id="auth-panel" class="card hidden">
+    <div class="card-title">Operator Token Setup</div>
+    <p style="font-size: 10px; color: #94a3b8; margin-top: 0; line-height: 1.3;">Provide your session token from Aegis Dashboard settings or local browser dashboard storage.</p>
+    <input type="password" id="token-input" class="input-field" placeholder="Paste JWT token here...">
+    <button id="save-token-btn" class="btn">Register Token</button>
+  </div>
+
+  <!-- NAVIGATION TABS (Visible when authenticated) -->
+  <div id="nav-tabs" class="tabs-nav hidden">
+    <button class="tab-btn active" id="tab-btn-scan" data-tab="scan">Dashboard</button>
+    <button class="tab-btn" id="tab-btn-chat" data-tab="chat">Aegis Chat</button>
+    <button class="tab-btn" id="tab-btn-history" data-tab="history">History</button>
+  </div>
+
+  <!-- SCAN TAB -->
+  <div id="scan-tab" class="tab-content active">
+    <!-- TARGET DOMAIN CARD -->
+    <div id="scan-panel" class="card">
+      <div class="card-title">Target Domain</div>
+      <div id="target-url" class="url-display">Fetching active tab...</div>
+      <button id="scan-btn" class="btn">Analyze Site Security</button>
+      <button id="logout-btn" class="btn btn-secondary text-xs">Re-configure Token</button>
+    </div>
+
+    <!-- LOADER -->
+    <div id="loading-panel" class="card hidden">
+      <div class="loader">
+        <div class="loader-icon"></div>
+        <span id="loader-msg">Auditing HTTP configurations...</span>
+      </div>
+    </div>
+
+    <!-- RESULT CARD -->
+    <div id="result-panel" class="card hidden">
+      <div class="card-title">Security Diagnosis</div>
+      <div class="result-grid">
+        <div class="score-circle" id="score-ring">
+          <span class="score-num" id="result-score">0</span>
+          <span class="score-label">SCORE</span>
+        </div>
+        <div>
+          <div style="font-size: 11px; font-weight: bold; margin-bottom: 4px; font-family: monospace;">Threat Rating:</div>
+          <div id="result-risk-badge" class="badge">UNKNOWN</div>
+        </div>
+      </div>
+      
+      <!-- Collapsible SSL Certificate details -->
+      <div id="ssl-details-box" class="hidden" style="margin-top: 12px; border-top: 1px solid #1e293b; padding-top: 8px;">
+        <button id="toggle-ssl-btn" style="background: none; border: none; color: #00f0ff; padding: 4px 0; outline: none; width: 100%; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-family: monospace; font-size: 9px; font-weight: bold;">
+          <span>🔍 SSL CERTIFICATE DETAILS</span>
+          <span id="ssl-arrow">▼</span>
+        </button>
+        <div id="ssl-details-content" class="hidden" style="font-size: 9px; font-family: monospace; color: #94a3b8; display: flex; flex-direction: column; gap: 4px; padding: 6px; background-color: #020617; border-radius: 4px; margin-top: 4px; border: 1px solid #0f172a; line-height: 1.3;">
+          <!-- Details injected here -->
+        </div>
+      </div>
+
+      <div class="issues-list" id="result-issues" style="margin-top: 10px;">
+        <!-- Issues injected here -->
+      </div>
+      
+      <!-- Download PDF Action button -->
+      <button id="download-pdf-btn" class="btn btn-secondary text-xs" style="margin-top: 10px; font-size: 10px; padding: 6px 12px; display: none;">
+        📥 Download PDF Report
+      </button>
+    </div>
+  </div>
+
+  <!-- CHAT TAB -->
+  <div id="chat-tab" class="tab-content">
+    <div class="card" style="margin-bottom: 8px;">
+      <div id="chat-box" style="height: 150px; overflow-y: auto; background: #020617; border: 1px solid #1e293b; border-radius: 6px; padding: 8px; display: flex; flex-direction: column; gap: 8px;">
+        <!-- Chat logs go here -->
+      </div>
+    </div>
+    <!-- Suggestions chip container -->
+    <div id="chat-suggestions" style="margin-bottom: 8px; display: flex; flex-wrap: wrap; gap: 6px; min-height: 20px;"></div>
+    <form id="chat-form" style="display: flex; gap: 6px;">
+      <input type="text" id="chat-input" class="input-field" placeholder="Query Aegis AI..." style="margin-bottom: 0; flex-grow: 1;">
+      <button type="submit" id="chat-send-btn" class="btn" style="width: auto; padding: 0 12px;">Send</button>
+    </form>
+  </div>
+
+  <!-- HISTORY TAB -->
+  <div id="history-tab" class="tab-content">
+    <div class="card">
+      <div class="card-title">Recent Audits</div>
+      <div id="history-list" style="display: flex; flex-direction: column; gap: 6px; max-height: 220px; overflow-y: auto;">
+        <!-- History items go here -->
+        <div style="font-size: 10px; font-family: monospace; color: #64748b; text-align: center; padding: 12px;">No scan history found.</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
