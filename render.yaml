@@ -2,6 +2,7 @@ services:
   - type: web
     name: aegis-backend
     env: python
+    plan: free
     buildCommand: "cd backend && pip install -r requirements.txt"
     startCommand: "cd backend && gunicorn main:app -k uvicorn.workers.UvicornWorker -b 0.0.0.0:$PORT"
     envVars:
@@ -13,8 +14,8 @@ services:
         value: 3.10.0
       - key: ALLOWED_ORIGIN_REGEX
         value: "https?://.*\\.vercel\\.app"
-
 databases:
   - name: aegis-db
     databaseName: aegis
     user: aegis_user
+    plan: free
